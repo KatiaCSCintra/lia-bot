@@ -7,7 +7,7 @@ from openai import OpenAI
 # 🔑 Pegando as variáveis de ambiente
 openai_api_key = os.getenv("OPENAI_API_KEY")
 zapi_token = os.getenv("ZAPI_KEY") or "A563B92C42CBFFF5234438DF"
-zapi_instance_url = os.getenv("ZAPI_URL") or "https://api.z-api.io/instances/3DF2E49A8C47E00D72D032C54B267657/token/A563B92C42CBFFF5234438DF/send-text"
+zapi_instance_url = os.getenv("ZAPI_URL") or "https://api.z-api.io/instances/3DF2E49A8C47E00D72D032C54B267657/send-text"
 
 # 🏠 Criando a aplicacao FastAPI
 app = FastAPI()
