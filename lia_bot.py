@@ -24,21 +24,26 @@ gatilhos_anuncio = [
     "meta", "facebook", "instagram"
 ]
 
-# 📤 Função pra enviar mensagem via Z-API
+# 📤 Função pra enviar mensagem via Z-API com os headers corretos
 def enviar_mensagem(numero, mensagem):
     payload = {
         "phone": numero,
         "message": mensagem
     }
 
-    response = requests.post(url, json=payload)
+    headers = {
+        "Content-Type": "application/json",
+        "Client-Token": "A563B92C42CBFFF5234438DF"  # 🧷 ESSENCIAL! Sem isso a Z-API nem te dá bom dia.
+    }
+
+    response = requests.post(url, json=payload, headers=headers)
     if response.status_code == 200:
         print("✅ Mensagem enviada com sucesso!")
     else:
         print(f"❌ Falha ao enviar mensagem: {response.status_code}")
         print(response.text)
 
-# 🔂 Rota principal
+# 🔂 Rota principal pra receber e responder mensagens
 @app.post("/webhook")
 async def responder(request: Request):
     body = await request.json()
