@@ -79,3 +79,10 @@ async def responder(request: Request):
         enviar_mensagem(numero_cliente, mensagem_bot)
 
     return {"resposta": mensagem_bot}
+
+from fastapi.responses import JSONResponse
+
+@app.get("/")
+def read_root():
+    return JSONResponse(content={"status": "Lia Bot está de pé, sim senhor(a)!"})
+
