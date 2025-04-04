@@ -48,6 +48,8 @@ def enviar_mensagem(numero, mensagem):
 @app.post("/webhook")
 async def responder(request: Request):
     body = await request.json()
+    print("📩 BODY RECEBIDO:", body)
+
     mensagem_cliente = body.get("message", "").lower()
     numero_cliente = body.get("phone", "")
 
