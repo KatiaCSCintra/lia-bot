@@ -1,10 +1,6 @@
 from fastapi import FastAPI, Request
 import os
 import requests
-from openai import OpenAI
-
-# Pega a chave da OpenAI do ambiente
-openai_api_key = os.getenv("OPENAI_API_KEY")
 
 # URL da Z-API sem o token na URL
 url = "https://api.z-api.io/instances/3DF2E49A8C47E00D72D032C54B267657/send-text"
@@ -12,7 +8,7 @@ url = "https://api.z-api.io/instances/3DF2E49A8C47E00D72D032C54B267657/send-text
 # Cria app FastAPI
 app = FastAPI()
 
-# Prompt de sistema
+# Prompt de sistema (inútil agora, mas bonitinho deixar aqui)
 system_prompt = {
     "role": "system",
     "content": "Você é a Lia, vendedora simpática, carismática e direta da LK Vest Confecções. Você atende clientes via WhatsApp."
@@ -48,6 +44,8 @@ def enviar_mensagem(numero, mensagem):
 @app.post("/webhook")
 async def responder(request: Request):
     body = await request.json()
+    print("📩 BODY RECEBIDO:", body)
+
     mensagem_cliente = body.get("message", "").lower()
     numero_cliente = body.get("phone", "")
 
@@ -57,20 +55,9 @@ async def responder(request: Request):
         enviar_mensagem(numero_cliente, resposta_meta)
         return {"resposta": resposta_meta}
 
-    # Gera resposta com OpenAI
-    client = OpenAI(api_key=openai_api_key)
-
-    historico = [
-        system_prompt,
-        {"role": "user", "content": mensagem_cliente}
-    ]
-
-    resposta = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=historico
-    )
-
-    mensagem_bot = resposta.choices[0].message.content
+    # RESPOSTA FIXA PARA TESTE
+    mensagem_bot = "Olá! Sou a Lia, sua consultora fashion do atacado 😎"
+    print("🤖 MENSAGEM DO BOT:", mensagem_bot)
 
     if numero_cliente:
         enviar_mensagem(numero_cliente, mensagem_bot)
