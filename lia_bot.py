@@ -3,34 +3,32 @@ import os
 import requests
 from openai import OpenAI
 
-# 🔐 Inicializa o cliente OpenAI com a API key do Render (variável de ambiente)
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+# 🔑 Pegando a chave da OpenAI do ambiente
+openai_api_key = os.getenv("OPENAI_API_KEY")
 
+# 🛜 Endpoint da sua Z-API
+url = "https://api.z-api.io/instances/3DF2E49A8C47E00D72D032C54B267657/token/A563B92C42CBFFF5234438DF/send-text"
+
+# 🦋 Cria app FastAPI
 app = FastAPI()
 
-# 🤖 Prompt base da Lia
+# 🧠 Prompt da Lia
 system_prompt = {
     "role": "system",
-    "content": (
-        "Você é a Lia, vendedora simpática, carismática e direta da LK Vest Confecções. "
-        "Você atende clientes pelo WhatsApp e ajuda a responder dúvidas ou realizar vendas."
-    ),
+    "content": "Você é a Lia, vendedora simpática, carismática e direta da LK Vest Confecções. Você atende clientes via WhatsApp."
 }
 
-# 🎣 Gatilhos que detectam mensagens de anúncio
+# 💥 Gatilhos pra identificar mensagens de anúncio
 gatilhos_anuncio = [
     "vi o anúncio", "anuncio", "anúncio", "vi seu anúncio", "vi seu anuncio",
     "meta", "facebook", "instagram"
 ]
 
-resposta_meta = "Olá! Vi que você veio pelo nosso anúncio. Como posso te ajudar hoje?"
-
-# 📤 Envia a mensagem pro número via API externa
+# 📤 Função pra enviar mensagem via Z-API
 def enviar_mensagem(numero, mensagem):
-    url = "https://sua.api.whatsapp.fake/enviar"  # 🚨 Substitua pela sua URL real
     payload = {
-        "numero": numero,
-        "mensagem": mensagem
+        "phone": numero,
+        "message": mensagem
     }
 
     response = requests.post(url, json=payload)
@@ -40,19 +38,22 @@ def enviar_mensagem(numero, mensagem):
         print(f"❌ Falha ao enviar mensagem: {response.status_code}")
         print(response.text)
 
-# 📩 Webhook que recebe as mensagens
+# 🔂 Rota principal
 @app.post("/webhook")
 async def responder(request: Request):
     body = await request.json()
     mensagem_cliente = body.get("message", "").lower()
     numero_cliente = body.get("phone", "")
 
-    # 🎯 Detecta se veio do anúncio
+    # 📢 Se for mensagem de anúncio
     if any(p in mensagem_cliente for p in gatilhos_anuncio):
+        resposta_meta = "Oi! Vi que você veio do anúncio. Posso te ajudar com as novidades da loja?"
         enviar_mensagem(numero_cliente, resposta_meta)
         return {"resposta": resposta_meta}
 
-    # 🤝 Resposta normal com OpenAI
+    # 🧠 Gera resposta com OpenAI
+    client = OpenAI(api_key=openai_api_key)
+
     historico = [
         system_prompt,
         {"role": "user", "content": mensagem_cliente}
