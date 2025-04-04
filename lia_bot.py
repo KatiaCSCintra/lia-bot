@@ -68,4 +68,4 @@ mensagem_bot = resposta.choices[0].message.content
 if numero_cliente:
         enviar_mensagem(numero_cliente, mensagem_bot)
 
-return {"resposta": mensagem_bot}
+    return {"resposta": mensagem_bot}
