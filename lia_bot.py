@@ -55,13 +55,17 @@ async def responder(request: Request):
     # 🤝 Resposta normal com OpenAI
     historico = [system_prompt, {"role": "user", "content": mensagem_cliente}]
 
-    resposta = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=historico
-    )
+    from openai import OpenAI
 
-    mensagem_bot = resposta.choices[0].message["content"]
-    if numero_cliente:
+client = OpenAI()
+
+resposta = client.chat.completions.create(
+    model="gpt-3.5-turbo",
+    messages=historico
+)
+mensagem_bot = resposta.choices[0].message.content
+
+if numero_cliente:
         enviar_mensagem(numero_cliente, mensagem_bot)
 
-    return {"resposta": mensagem_bot}
+return {"resposta": mensagem_bot}
