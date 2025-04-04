@@ -3,7 +3,7 @@ import openai
 import os
 import requests
 
-openai.api_key = os.getenv("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")  # Troca no ambiente de produção
+openai.api_key = os.getenv("OPENAI_API_KEY")  # Troca no ambiente de produção
 
 app = FastAPI()
 
